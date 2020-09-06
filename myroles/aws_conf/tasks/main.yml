@@ -1,0 +1,20 @@
+- name: httpd install
+  package: 
+    name: "httpd"
+    state: present
+  when: ansible_os_family == "RedHat"
+  become: true
+
+- name: sending httpd conf file
+  template:
+      src: "/etc/myroles/aws_conf/templates/httpd.conf.j2"
+      dest: "/etc/httpd/conf.d/hitesh.conf"
+  notify: start httpd
+  become: true
+
+- name: Copy webpage from url
+  get_url:
+        dest: "{{ dest_dir }}"
+        url: "https://raw.githubusercontent.com/Prakash2101/Ansible-Task1/master/index.html"
+  become: true
+

@@ -1,0 +1,55 @@
+
+- name: sg group with port no 80,22
+  ec2_group:
+    name: "task2_sg"
+    description: sg with rule descriptions
+    vpc_id: vpc-608d9b08
+    aws_access_key: "{{ access_key }}"
+    aws_secret_key: "{{ secret_key }}"
+    region: ap-south-1
+    rules:
+      - proto: tcp
+        ports:
+        - 80
+        - 22
+        cidr_ip: 0.0.0.0/0
+        rule_desc: allow all on port 80,22
+
+- name: provisioning ec2
+  ec2:
+    key_name: ans2
+    instance_type: t2.micro
+    region: ap-south-1
+    image: ami-052c08d70def0ac62
+    group: "task2_sg" 
+    count: 1
+    vpc_subnet_id: subnet-3a5e3276
+    assign_public_ip: yes
+    aws_access_key: "{{ access_key }}"
+    aws_secret_key: "{{ secret_key }}"
+    id: "{{ unique_id }}"
+    instance_tags: '{"Name":"ec21"}' 
+    wait: yes
+    wait_timeout: 60
+  register: x
+  tags: prov
+
+- debug: 
+   msg: "{{ x.instances[0].public_ip }}  > q.txt"
+  tags: prov
+
+- name: sending id keyword to termiante role( makes the task dynamic )
+  lineinfile: 
+       path: "/etc/myroles/del/vars/main.yml"
+       line: "my_id: {{ unique_id }}"
+       insertafter: alias.*
+
+- command: "touch /etc/inv_dir/aws_ip"
+  ignore_errors: yes
+
+- name: Insert the public ip at the end of a inventory file(making it little dynamic)
+  lineinfile:
+        path: /etc/inv_dir/aws_ip
+        line: "{{ x.instances[0].public_ip }}"
+        insertafter: alias.*
+        

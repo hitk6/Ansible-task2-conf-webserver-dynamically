@@ -1,0 +1,4 @@
+---
+# vars file for aws_conf
+dest_dir: "/var/www/hitesh"
+port_no: 81
