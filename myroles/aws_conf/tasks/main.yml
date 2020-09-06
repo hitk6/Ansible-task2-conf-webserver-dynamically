@@ -18,3 +18,5 @@
         url: "https://raw.githubusercontent.com/Prakash2101/Ansible-Task1/master/index.html"
   become: true
 
+# Here no access key and secret key is needed 
+# here we are inside ec2 ins and conn is done by ssh using key given in conf file
